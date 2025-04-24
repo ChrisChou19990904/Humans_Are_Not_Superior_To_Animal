@@ -50,22 +50,31 @@
     #more-content {
       display: none;
     }
+    #more-content.show {
+      display: block;
+    }
     #more-button {
       margin-top: 10px;
       cursor: pointer;
       color: #007BFF;
       font-weight: bold;
     }
-    /* 固定的 Google 翻譯選單 */
-    #google-translate {
+    #google-translate-box {
       position: fixed;
       top: 20px;
       left: 20px;
       z-index: 9999;
       background: #fff;
-      padding: 10px;
+      padding: 8px 12px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      #google-translate-box {
+        background: #1f1f1f;
+        border: 1px solid #555;
+      }
     }
     @media (prefers-color-scheme: dark) {
       body {
@@ -125,21 +134,6 @@
   <a id="twitter-share" href="#" target="_blank" style="text-decoration: none; color: #1DA1F2; font-weight: bold;">分享到 X</a>
 </div>
 <!-- Google 翻譯下拉選單 -->
-<div id="google-translate">
-  <select onchange="window.location.href=this.value;">
-    <option data-lang="zh-TW">繁體中文</option>
-    <option data-lang="en">English</option>
-    <option data-lang="de">Deutsch (德語)</option>
-    <option data-lang="fr">Français (法語)</option>
-    <option data-lang="th">ไทย (泰語)</option>
-    <option data-lang="vi">Tiếng Việt (越南語)</option>
-    <option data-lang="ms">Bahasa Melayu (馬來語)</option>
-    <option data-lang="id">Bahasa Indonesia (印尼語)</option>
-    <option data-lang="ar">العربية (阿拉伯語)</option>
-    <option data-lang="tr">Türkçe (土耳其語)</option>
-    <option data-lang="ru">Русский (俄語)</option>
-  </select>
-</div>
 <script>
   // 自動抓取當前頁面的 URL
   var currentUrl = window.location.href;
@@ -153,35 +147,28 @@
   document.getElementById("twitter-share").href =
           "https://twitter.com/intent/tweet?url=" + encodeURIComponent(currentUrl) + "&text=你的文章標題";
   // 查看更多/更少功能
-  document.getElementById("more-button").addEventListener("click", function() {
+  document.getElementById("more-button").addEventListener("click", function () {
     var moreContent = document.getElementById("more-content");
     var button = document.getElementById("more-button");
-    if (moreContent.style.display === "none") {
-      moreContent.style.display = "block";
-      button.textContent = "更少";
-    } else {
-      moreContent.style.display = "none";
-      button.textContent = "查看更多";
-    }
-  });
-</script>
-<script>
-  const currentUrl = window.location.href;
-  const select = document.getElementById('lang-select');
 
-  for (const option of select.options) {
-    const lang = option.getAttribute('data-lang');
-    option.value = `https://translate.google.com/translate?hl=zh-TW&sl=auto&tl=${lang}&u=${encodeURIComponent(currentUrl)}`;
+    moreContent.classList.toggle("show");
+    button.textContent = moreContent.classList.contains("show") ? "查看更少" : "查看更多";
+  });
+
+</script>
+<div id="google-translate-box">
+  <div id="google_translate_element"></div>
+</div>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'zh-TW',
+      includedLanguages: 'en,zh-TW,fr,vi,th,de,id,ms,ar,tr,ru, ja, ko,pt,es',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    }, 'google_translate_element');
   }
-
-  select.addEventListener('change', function () {
-    if (window.location.protocol === "file:") {
-      alert("請將此網頁上傳到伺服器才能使用 Google 翻譯！");
-      return;
-    }
-    window.location.href = this.value;
-  });
 </script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
